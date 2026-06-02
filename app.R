@@ -15,8 +15,8 @@ ui <- fluidPage(
 
   sidebarLayout(
     sidebarPanel(
-      numericInput("volume",      "Fish Tank Volume (litres)",   value = 500,  min = 10,  max = 50000, step = 10),
-      numericInput("feed",        "Daily Feed Amount (grams)",   value = 100,  min = 1,   max = 10000, step = 5),
+      numericInput("volume",      "Fish Tank Volume (litres)",   value = 600,  min = 10,  max = 50000, step = 10),
+      numericInput("feed",        "Daily Feed Amount (grams)",   value = 80,   min = 1,   max = 10000, step = 5),
       numericInput("temperature", "Water Temperature (°C)",      value = 25,   min = 5,   max = 35,    step = 0.5),
       numericInput("ph",          "pH",                          value = 7.5,  min = 5,   max = 9,     step = 0.1),
       actionButton("run", "Calculate", class = "btn-primary btn-block",
@@ -84,10 +84,11 @@ server <- function(input, output, session) {
     df  <- curve_data()
     st  <- status()
 
-    par(mar = c(4, 4, 1, 1), bg = "#f4f7fb")
+    par(mar = c(4, 5, 1, 1), bg = "#f4f7fb")
     plot(df$hour, df$nh3_mg_l,
          type = "l", lwd = 2.5, col = st$color,
-         xlab = "Time (hours)", ylab = "NH₃-N (mg/L)",
+         xlab = "Time (hours)",
+         ylab = expression(NH[3]*"-N  (mg/L)"),
          ylim = c(0, max(df$nh3_mg_l, 3.5) * 1.1),
          las  = 1)
 
@@ -95,7 +96,7 @@ server <- function(input, output, session) {
     abline(h = 1.0, lty = 2, col = "#f39c12", lwd = 1.2)
     abline(h = 3.0, lty = 2, col = "#e74c3c", lwd = 1.2)
     legend("topright",
-           legend = c("NH₃-N", "Warning (1 mg/L)", "Critical (3 mg/L)"),
+           legend = c(expression(NH[3]*"-N"), "Warning (1 mg/L)", "Critical (3 mg/L)"),
            col    = c(st$color, "#f39c12", "#e74c3c"),
            lty    = c(1, 2, 2), lwd = c(2.5, 1.2, 1.2),
            bty    = "n", cex = 0.85)
@@ -105,7 +106,7 @@ server <- function(input, output, session) {
 
   output$prod_rate_out <- renderText({
     rate <- ammonia_production_rate(input$feed, input$volume)
-    sprintf("%.4f mg NH₃-N / L / hr", rate)
+    sprintf("%.4f mg NH3-N / L / hr", rate)
   })
 
   output$peak_nh3_out <- renderText({
