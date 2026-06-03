@@ -1,29 +1,45 @@
-# AquaKinetics — CLAUDE.md
+# AquaKinetics — CLAUDE.md (`feat/python-dash` branch)
 
-Aquaponic biofilter health calculator. R + Shiny only. No Python, Flask, or JavaScript frameworks — ever.
+> **This is the Python parallel branch.** The canonical R + Shiny version lives on `main`.
+> The R constraints below do NOT apply here.
+
+Aquaponic biofilter health calculator — Python rebuild for side-by-side comparison with the R/Shiny version.
 
 ## Stack
 
-- **Runtime:** R 4.6.0
-- **UI framework:** Shiny 1.10.0
-- **Plots:** base R graphics (`plot`, `par`, `abline`, `legend`) — no ggplot2
-- **Dependencies:** declared in `renv.lock`; add new packages there before using them
-- **Deployment:** shinyapps.io via `rsconnect::deployApp()`
+- **Runtime:** Python 3.x
+- **UI framework:** Dash 2.18+
+- **Plots:** Matplotlib (rendered to base64 PNG, embedded via `html.Img`)
+- **Numerics:** NumPy
+- **Dependencies:** declared in `requirements.txt`
+- **Tests:** pytest
 
 ## Project structure
 
 ```
-app.R               # Single-file Shiny app — UI and server combined
-R/
-  kinetics.R        # Monod model: ammonia production, nitrification rate,
+app.py              # Single-file Dash app — layout and callbacks combined
+kinetics.py         # Monod model: ammonia production, nitrification rate,
                     #   72-hr Euler simulation, health classifier
-  ui_helpers.R      # status_badge() — coloured HTML badge component
-www/
-  styles.css        # Flat CSS theming, no frameworks
-renv.lock           # Pinned dependency versions
+assets/
+  styles.css        # Flat CSS theming (Dash auto-serves the assets/ folder)
+requirements.txt    # Pinned dependency versions
+conftest.py         # pytest path setup
+tests/
+  test_kinetics.py  # pytest tests for kinetics.py
 ```
 
-`app.R` calls `source("R/kinetics.R")` and `source("R/ui_helpers.R")` at the top.
+## Running the app
+
+```bash
+pip install -r requirements.txt
+python app.py
+```
+
+## Running tests
+
+```bash
+pytest tests/
+```
 
 ## Science model
 
@@ -66,13 +82,6 @@ If you change any threshold, constant, or formula, update this table.
 4. Production rate readout (mg NH₃-N / L / hr)
 5. Peak NH₃ readout (mg/L)
 
-## Running the app
-
-```bash
-Rscript -e "shiny::runApp('.')"
-```
-
-Or open `app.R` in RStudio and click **Run App**.
 
 ## Branching and commits
 
